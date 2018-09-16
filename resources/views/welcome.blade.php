@@ -11,17 +11,39 @@
   </nav>
 </div>
 <div class="row">
+  <form class="" action="/messages/create" method="post">
+    <div class="form-group @if($errors->has('message')) has-danger @endif">
+      {{ csrf_field() }}
+      <input type="text" name="message" placeholder="Que estas pensando" class="form-control">
+      @if($errors->has('message'))
+        @foreach($errors->get('message') as $error)
+        <div class="form-control-feedback">
+          {{$error}}
+        </div>
+        @endforeach
+      @endif
+    </div>
+  </form>
+</div>
+<div class="row">
   @forelse($messages as $message)
   <div class="col-md-6">
-    <img class="img-thumbnail" src="{{$message['image']}}">
+    <img class="img-thumbnail" src="{{$message->image}}">
     <p class=card-text>
-      {{$message['content']}}
-      <a href="/messages/{{$message['id']}}">Ver mas</a>
+      {{$message->content}}
+      <a href="/messages/{{$message->id}}">Ver mas</a>
     </p>
   </div>
   @empty
     <p>No hay mensajes destacados.</p>
   @endforelse
+
+@if(count($messages))
+<div class="mt-2 mx-auto">
+  {{ $messages->links('pagination::bootstrap-4') }}
+</div>
+@endif
+
 </div>
 
 @endsection
