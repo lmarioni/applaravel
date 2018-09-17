@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'username','email', 'password', 'avatar'
     ];
 
     /**
@@ -27,4 +27,28 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function messages(){
+      return $this->hasMany(Message::class)->orderBy('created_at','desc');
+    }
+
+    public function follows(){
+      //parametros: clase, foreignkey,relatedid
+      // le digo los otros usuarios donde yo soy userid y followed los otros
+      //pregunto a quienes sigo
+      return $this->belongsToMany(User::class, 'followers', 'user_id', 'followed_id');
+    }
+
+    public function followers(){
+      //me devuelve quienes me siguien
+      return $this->belongsToMany(User::class, 'followers', 'followed_id', 'user_id');
+    }
+
+    public function isFollowing($user){
+      return $this->follows->contains($user);
+    }
+
+    public function socialProfile(){
+      return $this->hasMany(SocialProfile::class);
+    }
 }
