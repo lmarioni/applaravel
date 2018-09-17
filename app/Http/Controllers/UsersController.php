@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Conversation;
+use App\PrivateMessage;
 
 class UsersController extends Controller
 {
@@ -53,5 +55,28 @@ class UsersController extends Controller
       $me->follows()->detach($user);
 
       return redirect("/$username")->withSuccess('Usuario no seguido!');
+    }
+
+    public function sendPrivateMessage($username,Request $request){
+      $user = $this->findbyUsername($username);
+
+      $me = $request->user();
+      $message = $request->input('message');
+
+      $conversation = Conversation::create();
+      $conversation->users()->attach($me);
+      $conversation->users()->attach($user);
+
+      $privateMessage = PrivateMessage::create([
+        'conversation_id' => $conversation->id,
+        'user_id' => $me->id,
+        'message' => $message,
+      ]);
+
+      return redirect('/conversations/'.$conversation->id);
+    }
+
+    public function showConversation(Conversation $conversation){
+      dd($conversation);
     }
 }
